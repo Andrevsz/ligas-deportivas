@@ -9,10 +9,16 @@ class Equipo extends Model
 {
     use HasFactory;
 
-    // Campos que permitimos guardar desde el formulario
-    protected $fillable = ['liga_id', 'nombre', 'ciudad', 'logo_url'];
+    // Ajustado a las columnas reales de nuestra base de datos
+    protected $fillable = [
+        'liga_id', 
+        'nombre', 
+        'entrenador', 
+        'puntos', 
+        'estado_activo'
+    ];
 
-    // Un Equipo pertenece a una Liga (Relación Inversa)
+    // --- Relaciones ---
     public function liga()
     {
         return $this->belongsTo(Liga::class);
@@ -23,15 +29,37 @@ class Equipo extends Model
         return $this->hasMany(Jugador::class);
     }
     
-    // Un Equipo juega muchos partidos como LOCAL
     public function partidosLocales()
     {
         return $this->hasMany(Partido::class, 'equipo_local_id');
     }
 
-    // Un Equipo juega muchos partidos como VISITANTE
     public function partidosVisitantes()
     {
         return $this->hasMany(Partido::class, 'equipo_visitante_id');
+    }
+
+    // --- Calcular puntos totales de forma dinámica ---
+    public function getPuntosAttribute()
+    {
+        $puntos = 0;
+
+        // Sumar puntos como local
+        foreach ($this->partidosLocales as $partido) {
+            if ($partido->resultado_local !== null && $partido->resultado_visitante !== null) {
+                if ($partido->resultado_local > $partido->resultado_visitante) $puntos += 3;
+                elseif ($partido->resultado_local == $partido->resultado_visitante) $puntos += 1;
+            }
+        }
+
+        // Sumar puntos como visitante
+        foreach ($this->partidosVisitantes as $partido) {
+            if ($partido->resultado_local !== null && $partido->resultado_visitante !== null) {
+                if ($partido->resultado_visitante > $partido->resultado_local) $puntos += 3;
+                elseif ($partido->resultado_visitante == $partido->resultado_local) $puntos += 1;
+            }
+        }
+
+        return $puntos;
     }
 }

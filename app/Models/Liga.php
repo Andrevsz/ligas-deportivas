@@ -9,16 +9,24 @@ class Liga extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['nombre', 'deporte', 'temporada', 'descripcion'];
+    protected $fillable = [
+        'user_id',
+        'nombre',
+        'deporte',
+        'temporada',
+        'descripcion',
+        'estado_activa',
+    ];
 
-    // Una Liga tiene muchos Equipos (Relación 1 a Muchos)
+    // Una liga pertenece a un usuario
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+    
+    // Una liga tiene muchos equipos
     public function equipos()
     {
         return $this->hasMany(Equipo::class);
-    }
-    
-    public function partidos()
-    {
-        return $this->hasMany(Partido::class);
     }
 }

@@ -1,0 +1,1 @@
+<img src="{{ asset('img\SZ.png') }}" {{ $attributes->merge(['class' => 'h-12 w-auto object-contain']) }} alt="Logo del Sistema">

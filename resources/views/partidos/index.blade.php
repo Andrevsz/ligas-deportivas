@@ -1,62 +1,50 @@
-@extends('layouts.app')
+<x-app-layout>
+    <x-slot name="header">
+        <h2 class="font-semibold text-xl text-purple-400 leading-tight">
+            {{ __('Calendario y Resultados') }}
+        </h2>
+    </x-slot>
 
-@section('content')
-    <div style="display: flex; justify-content: space-between; align-items: center;">
-        <h1 style="margin: 0;">Calendario de Partidos</h1>
-        <a href="{{ route('partidos.create') }}" class="btn-glass">+ Programar Partido</a>
-    </div>
+    <div class="py-12">
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            <div class="bg-white/5 backdrop-blur-lg border border-white/10 shadow-xl sm:rounded-2xl p-6 md:p-8">
+                
+                <div class="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
+                    <h3 class="text-2xl font-bold text-white">Encuentros</h3>
+                    <a href="{{ route('partidos.create') }}" class="px-6 py-3 bg-purple-600 hover:bg-purple-500 text-white font-bold rounded-lg shadow-lg shadow-purple-500/30 transition duration-300">
+                        Programar Partido
+                    </a>
+                </div>
 
-    @if(session('success'))
-        <div style="background: rgba(0, 255, 0, 0.1); border: 1px solid rgba(0, 255, 0, 0.3); padding: 15px; border-radius: 8px; margin-top: 20px;">
-            {{ session('success') }}
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    @forelse($partidos as $partido)
+                        <div class="bg-white/5 border border-white/10 p-6 rounded-2xl flex flex-col justify-between relative group">
+                            <div class="text-xs text-gray-400 mb-4">{{ date('d/m/Y H:i', strtotime($partido->fecha)) }}</div>
+                            
+                            <div class="flex items-center justify-between text-white font-bold text-lg my-2">
+                                <span class="w-2/5 truncate">{{ $partido->equipoLocal->nombre }}</span>
+                                <span class="bg-[#0f172a] px-4 py-2 rounded-lg text-purple-400 border border-white/10">
+                                    {{ $partido->resultado_local ?? '-' }} : {{ $partido->resultado_visitante ?? '-' }}
+                                </span>
+                                <span class="w-2/5 text-right truncate">{{ $partido->equipoVisitante->nombre }}</span>
+                            </div>
+
+                            <div class="flex justify-end items-center gap-4 mt-4 pt-4 border-t border-white/5">
+                                <a href="{{ route('partidos.edit', $partido->id) }}" class="text-sm text-blue-400 hover:underline">Ingresar Marcador</a>
+                                <form action="{{ route('partidos.destroy', $partido->id) }}" method="POST">
+                                    @csrf @method('DELETE')
+                                    <button type="submit" class="text-sm text-red-400 hover:underline">Eliminar</button>
+                                </form>
+                            </div>
+                        </div>
+                    @empty
+                        <div class="col-span-1 md:col-span-2 text-center py-12 text-gray-400">
+                            No hay encuentros agendados todavía.
+                        </div>
+                    @endforelse
+                </div>
+
+            </div>
         </div>
-    @endif
-
-    <table>
-        <thead>
-            <tr>
-                <th>Liga</th>
-                <th>Fecha y Hora</th>
-                <th style="text-align: right;">Local</th>
-                <th style="text-align: center; width: 100px;">Marcador</th>
-                <th style="text-align: left;">Visitante</th>
-                <th>Acciones</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach($partidos as $partido)
-                <tr>
-                    <td><small style="opacity: 0.8;">{{ $partido->liga->nombre }}</small></td>
-                    <td>{{ date('d/m/Y H:i', strtotime($partido->fecha_hora)) }}</td>
-                    
-                    <td style="text-align: right;"><strong>{{ $partido->equipoLocal->nombre }}</strong></td>
-                    
-                    <td style="text-align: center;">
-                        <span style="background: rgba(255,255,255,0.1); padding: 5px 10px; border-radius: 5px; font-weight: bold;">
-                            {{ $partido->resultado_local ?? '-' }}
-                        </span>
-                        :
-                        <span style="background: rgba(255,255,255,0.1); padding: 5px 10px; border-radius: 5px; font-weight: bold;">
-                            {{ $partido->resultado_visitante ?? '-' }}
-                        </span>
-                    </td>
-                    
-                    <td style="text-align: left;"><strong>{{ $partido->equipoVisitante->nombre }}</strong></td>
-                    
-                    <td style="display: flex; gap: 10px;">
-                        <a href="{{ route('partidos.edit', $partido->id) }}" class="btn-glass">Editar / Resultado</a>
-                        <form action="{{ route('partidos.destroy', $partido->id) }}" method="POST" style="margin: 0;">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="btn-glass btn-danger" onclick="return confirm('¿Suspender este partido?')">Eliminar</button>
-                        </form>
-                    </td>
-                </tr>
-            @endforeach
-        </tbody>
-    </table>
-
-    @if($partidos->isEmpty())
-        <p style="text-align: center; margin-top: 30px; opacity: 0.7;">No hay partidos programados todavía.</p>
-    @endif
-@endsection
+    </div>
+</x-app-layout>

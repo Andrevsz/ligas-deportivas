@@ -13,10 +13,13 @@ return new class extends Migration
     {
         Schema::create('ligas', function (Blueprint $table) {
             $table->id();
-            $table->string('nombre');
-            $table->string('deporte');
-            $table->year('temporada');
-            $table->text('descripcion')->nullable();
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            
+            $table->string('nombre'); 
+            $table->string('deporte'); 
+            $table->string('temporada'); 
+            $table->text('descripcion')->nullable(); 
+            $table->boolean('estado_activa')->default(true); 
             $table->timestamps();
         });
     }

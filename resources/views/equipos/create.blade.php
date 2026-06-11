@@ -1,43 +1,61 @@
-@extends('layouts.app')
+<x-app-layout>
+    <x-slot name="header">
+        <h2 class="font-semibold text-xl text-blue-400 leading-tight">
+            {{ __('Inscribir Equipo') }}
+        </h2>
+    </x-slot>
 
-@section('content')
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-        <h1 style="margin: 0;">Crear Nuevo Equipo</h1>
-        <a href="{{ route('equipos.index') }}" class="btn-glass" style="background: rgba(255,255,255,0.05);">← Volver</a>
+    <div class="py-12">
+        <div class="max-w-4xl mx-auto sm:px-6 lg:px-8">
+            <div class="bg-white/5 backdrop-blur-lg border border-white/10 shadow-2xl overflow-hidden sm:rounded-2xl p-8">
+                
+                <div class="mb-8">
+                    <h3 class="text-2xl font-bold text-white">Ficha de Inscripción</h3>
+                    <p class="text-gray-400 text-sm mt-1">Asigna el nuevo equipo a una liga activa.</p>
+                </div>
+
+                <form method="POST" action="{{ route('equipos.store') }}">
+                    @csrf
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        
+                        <div class="col-span-1 md:col-span-2">
+                            <label for="liga_id" class="block font-medium text-sm text-gray-300">Torneo a participar *</label>
+                            <select id="liga_id" name="liga_id" required
+                                class="block mt-1 w-full bg-[#0f172a]/50 border border-gray-600 text-white rounded-lg focus:ring-blue-500 focus:border-blue-500 py-2 px-3 [&>option]:bg-[#0f172a] transition">
+                                <option value="" disabled selected>Selecciona la liga correspondiente...</option>
+                                @foreach($ligas as $liga)
+                                    <option value="{{ $liga->id }}">{{ $liga->nombre }} ({{ $liga->temporada }})</option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <div>
+                            <label for="nombre" class="block font-medium text-sm text-gray-300">Nombre del Equipo *</label>
+                            <input id="nombre" type="text" name="nombre" required placeholder="Ej: Los Leones FC"
+                                class="block mt-1 w-full bg-[#0f172a]/50 border border-gray-600 text-white rounded-lg focus:ring-blue-500 focus:border-blue-500 py-2 px-3 transition">
+                        </div>
+
+                        <div>
+                            <label for="entrenador" class="block font-medium text-sm text-gray-300">Entrenador / DT</label>
+                            <input id="entrenador" type="text" name="entrenador" placeholder="Ej: Marcelo Bielsa"
+                                class="block mt-1 w-full bg-[#0f172a]/50 border border-gray-600 text-white rounded-lg focus:ring-blue-500 focus:border-blue-500 py-2 px-3 transition">
+                        </div>
+
+                    </div>
+
+                    <div class="flex items-center justify-end mt-8 border-t border-white/10 pt-6">
+                        <a href="{{ route('equipos.index') }}" class="text-sm text-gray-400 hover:text-white transition duration-150 ease-in-out mr-6">
+                            Cancelar
+                        </a>
+
+                        <button type="submit" class="inline-flex items-center px-6 py-3 bg-blue-600 hover:bg-blue-500 rounded-lg font-bold text-sm text-white focus:outline-none transition ease-in-out duration-150 shadow-lg shadow-blue-500/30">
+                            Guardar Equipo
+                        </button>
+                    </div>
+                </form>
+
+            </div>
+        </div>
     </div>
-
-    @if ($errors->any())
-        <div style="background: rgba(255, 50, 50, 0.2); border: 1px solid rgba(255, 50, 50, 0.4); padding: 15px; border-radius: 8px; margin-bottom: 20px;">
-            <ul style="margin: 0; padding-left: 20px;">
-                @foreach ($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                @endforeach
-            </ul>
-        </div>
-    @endif
-
-    <form action="{{ route('equipos.store') }}" method="POST">
-        @csrf 
-
-        <label for="liga_id">Seleccionar Liga</label>
-        <select name="liga_id" id="liga_id" class="glass-input" required>
-            <option value="" disabled selected style="color: black;">-- Elige una Liga --</option>
-            @foreach($ligas as $liga)
-                <option value="{{ $liga->id }}" style="color: black;">{{ $liga->nombre }} ({{ $liga->temporada }})</option>
-            @endforeach
-        </select>
-
-        <label for="nombre">Nombre del Equipo</label>
-        <input type="text" name="nombre" id="nombre" class="glass-input" value="{{ old('nombre') }}" placeholder="Ej: Los Halcones" required>
-
-        <label for="ciudad">Ciudad</label>
-        <input type="text" name="ciudad" id="ciudad" class="glass-input" value="{{ old('ciudad') }}" placeholder="Ej: Santiago" required>
-
-        <label for="logo_url">URL del Logo (Opcional)</label>
-        <input type="url" name="logo_url" id="logo_url" class="glass-input" value="{{ old('logo_url') }}" placeholder="https://...">
-
-        <div style="margin-top: 30px; text-align: right;">
-            <button type="submit" class="btn-glass" style="background: rgba(0, 200, 100, 0.2); border-color: rgba(0, 200, 100, 0.4);">Guardar Equipo</button>
-        </div>
-    </form>
-@endsection
+</x-app-layout>

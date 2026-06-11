@@ -1,76 +1,38 @@
-@extends('layouts.app')
+<x-app-layout>
+    <x-slot name="header">
+        <h2 class="font-semibold text-xl text-purple-400 leading-tight">
+            {{ __('Ingresar Marcador') }}
+        </h2>
+    </x-slot>
 
-@section('content')
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-        <h1 style="margin: 0;">Gestionar Partido</h1>
-        <a href="{{ route('partidos.index') }}" class="btn-glass" style="background: rgba(255,255,255,0.05);">← Volver</a>
+    <div class="py-12">
+        <div class="max-w-2xl mx-auto sm:px-6 lg:px-8">
+            <div class="bg-white/5 backdrop-blur-lg border border-white/10 shadow-2xl rounded-2xl p-8 text-center">
+                
+                <h3 class="text-xl text-gray-400 mb-6">Actualizar Resultado Oficial</h3>
+
+                <form method="POST" action="{{ route('partidos.update', $partido->id) }}">
+                    @csrf @method('PUT')
+
+                    <div class="flex items-center justify-center gap-8 text-white font-bold text-xl">
+                        <div class="w-1/3 text-right">{{ $partido->equipoLocal->nombre }}</div>
+                        
+                        <input type="number" name="resultado_local" value="{{ $partido->resultado_local }}" min="0" class="w-16 bg-[#0f172a]/80 border border-gray-600 text-white text-center rounded-lg text-2xl py-2">
+                        <span class="text-gray-500">:</span>
+                        <input type="number" name="resultado_visitante" value="{{ $partido->resultado_visitante }}" min="0" class="w-16 bg-[#0f172a]/80 border border-gray-600 text-white text-center rounded-lg text-2xl py-2">
+                        
+                        <div class="w-1/3 text-left">{{ $partido->equipoVisitante->nombre }}</div>
+                    </div>
+
+                    <div class="flex items-center justify-end mt-12 border-t border-white/10 pt-6">
+                        <a href="{{ route('partidos.index') }}" class="text-sm text-gray-400 hover:text-white mr-6">Cancelar</a>
+                        <button type="submit" class="px-6 py-3 bg-purple-600 hover:bg-purple-500 rounded-lg font-bold text-sm text-white">
+                            Guardar Resultado
+                        </button>
+                    </div>
+                </form>
+
+            </div>
+        </div>
     </div>
-
-    @if ($errors->any())
-        <div style="background: rgba(255, 50, 50, 0.2); border: 1px solid rgba(255, 50, 50, 0.4); padding: 15px; border-radius: 8px; margin-bottom: 20px;">
-            <ul style="margin: 0; padding-left: 20px;">
-                @foreach ($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                @endforeach
-            </ul>
-        </div>
-    @endif
-
-    <form action="{{ route('partidos.update', $partido->id) }}" method="POST">
-        @csrf
-        @method('PUT') 
-
-        <label for="liga_id">Liga / Torneo</label>
-        <select name="liga_id" id="liga_id" class="glass-input" required>
-            @foreach($ligas as $liga)
-                <option value="{{ $liga->id }}" style="color: black;" {{ $partido->liga_id == $liga->id ? 'selected' : '' }}>
-                    {{ $liga->nombre }}
-                </option>
-            @endforeach
-        </select>
-
-        <div style="display: flex; gap: 20px; margin-top: 15px;">
-            <div style="flex: 1;">
-                <label for="equipo_local_id">Equipo Local</label>
-                <select name="equipo_local_id" id="equipo_local_id" class="glass-input" required>
-                    @foreach($equipos as $equipo)
-                        <option value="{{ $equipo->id }}" style="color: black;" {{ $partido->equipo_local_id == $equipo->id ? 'selected' : '' }}>
-                            {{ $equipo->nombre }}
-                        </option>
-                    @endforeach
-                </select>
-            </div>
-
-            <div style="flex: 1;">
-                <label for="equipo_visitante_id">Equipo Visitante</label>
-                <select name="equipo_visitante_id" id="equipo_visitante_id" class="glass-input" required>
-                    @foreach($equipos as $equipo)
-                        <option value="{{ $equipo->id }}" style="color: black;" {{ $partido->equipo_visitante_id == $equipo->id ? 'selected' : '' }}>
-                            {{ $equipo->nombre }}
-                        </option>
-                    @endforeach
-                </select>
-            </div>
-        </div>
-
-        <label for="fecha_hora">Fecha y Hora</label>
-        <input type="datetime-local" name="fecha_hora" id="fecha_hora" class="glass-input" value="{{ old('fecha_hora', date('Y-m-d\TH:i', strtotime($partido->fecha_hora))) }}" required>
-
-        <div style="margin-top: 25px; padding: 20px; background: rgba(255,255,255,0.02); border: 1px dashed rgba(255,255,255,0.1); border-radius: 10px;">
-            <h3 style="margin-top: 0; color: #00d2ff;">Resultado Final (Opcional)</h3>
-            <div style="display: flex; gap: 20px; align-items: center;">
-                <div style="flex: 1;">
-                    <label for="resultado_local">Puntuación Local</label> <input type="number" name="resultado_local" id="resultado_local" class="glass-input" value="{{ old('resultado_local', $partido->resultado_local) }}" min="0" placeholder="-">
-                </div>
-                <div style="font-size: 2em; margin-top: 25px; opacity: 0.5;">X</div>
-                <div style="flex: 1;">
-                    <label for="resultado_visitante">Puntuación Visitante</label> <input type="number" name="resultado_visitante" id="resultado_visitante" class="glass-input" value="{{ old('resultado_visitante', $partido->resultado_visitante) }}" min="0" placeholder="-">
-                </div>
-            </div>
-        </div>
-
-        <div style="margin-top: 30px; text-align: right;">
-            <button type="submit" class="btn-glass" style="background: rgba(0, 150, 255, 0.2); border-color: rgba(0, 150, 255, 0.4);">Actualizar Partido</button>
-        </div>
-    </form>
-@endsection
+</x-app-layout>
