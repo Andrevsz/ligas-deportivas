@@ -9,9 +9,16 @@ class Liga extends Model
 {
     use HasFactory;
 
-    protected $fillable = [
-        'nombre',
-        'temporada',
-        'descripcion'
-    ];
+    protected $fillable = ['nombre', 'deporte', 'temporada', 'descripcion'];
+
+    // Una Liga tiene muchos Equipos (Relación 1 a Muchos)
+    public function equipos()
+    {
+        return $this->hasMany(Equipo::class);
+    }
+    
+    public function partidos()
+    {
+        return $this->hasMany(Partido::class);
+    }
 }

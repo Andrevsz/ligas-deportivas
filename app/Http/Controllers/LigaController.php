@@ -26,6 +26,7 @@ class LigaController extends Controller
         // Validación estricta
         $request->validate([
             'nombre' => 'required|string|max:255',
+            'deporte' => 'required|string|max:255',
             'temporada' => 'required|digits:4|integer',
             'descripcion' => 'nullable|string'
         ]);
@@ -54,6 +55,7 @@ class LigaController extends Controller
     {
         $request->validate([
             'nombre' => 'required|string|max:255',
+            'deporte' => 'required|string|max:255',
             'temporada' => 'required|digits:4|integer',
             'descripcion' => 'nullable|string'
         ]);

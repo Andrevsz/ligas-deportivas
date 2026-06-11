@@ -2,9 +2,38 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Partido extends Model
 {
-    //
+    use HasFactory;
+
+    protected $fillable = [
+        'liga_id', 
+        'equipo_local_id', 
+        'equipo_visitante_id', 
+        'fecha_hora', 
+        'resultado_local', 
+        'resultado_visitante'
+    ];
+
+    // Un Partido pertenece a una Liga
+    public function liga()
+    {
+        return $this->belongsTo(Liga::class);
+    }
+
+    // Un Partido pertenece a un Equipo Local
+    public function equipoLocal()
+    {
+        // Especificamos 'equipo_local_id' como la columna de conexión
+        return $this->belongsTo(Equipo::class, 'equipo_local_id');
+    }
+
+    // Un Partido pertenece a un Equipo Visitante
+    public function equipoVisitante()
+    {
+        return $this->belongsTo(Equipo::class, 'equipo_visitante_id');
+    }
 }
