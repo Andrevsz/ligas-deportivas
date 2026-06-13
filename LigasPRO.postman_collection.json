@@ -1,0 +1,127 @@
+{
+	"info": {
+		"_postman_id": "a1b2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6d",
+		"name": "LigasPRO API - Documentación Oficial",
+		"description": "Colección completa de endpoints RESTful para la gestión de la plataforma LigasPRO. Incluye validaciones, manejo de códigos de estado HTTP y aislamiento de datos por administrador.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Ligas",
+			"item": [
+				{
+					"name": "Obtener todas las Ligas",
+					"request": {
+						"method": "GET",
+						"header": [
+							{ "key": "Accept", "value": "application/json" }
+						],
+						"url": {
+							"raw": "{{base_url}}/api/ligas",
+							"host": ["{{base_url}}"],
+							"path": ["api", "ligas"]
+						},
+						"description": "Retorna una lista en formato JSON con todas las ligas creadas exclusivamente por el usuario autenticado (Código HTTP 200 OK)."
+					}
+				},
+				{
+					"name": "Crear una Nueva Liga",
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Accept", "value": "application/json" },
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"nombre\": \"Torneo de Clausura 2026\",\n    \"disciplina\": \"Vóleibol\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/ligas",
+							"host": ["{{base_url}}"],
+							"path": ["api", "ligas"]
+						},
+						"description": "Registra una liga asociándola automáticamente al ID del administrador activo. Retorna Código HTTP 201 Created."
+					}
+				}
+			]
+		},
+		{
+			"name": "Equipos",
+			"item": [
+				{
+					"name": "Registrar Equipo en una Liga",
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Accept", "value": "application/json" },
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"liga_id\": 1,\n    \"nombre\": \"Zenith VBC\",\n    \"ciudad\": \"Santiago\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/equipos",
+							"host": ["{{base_url}}"],
+							"path": ["api", "equipos"]
+						},
+						"description": "Inscribe un club deportivo vinculándolo a una de las ligas del usuario. Valida campos obligatorios y llave foránea."
+					}
+				}
+			]
+		},
+		{
+			"name": "Partidos y Resultados",
+			"item": [
+				{
+					"name": "Programar Encuentro",
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Accept", "value": "application/json" },
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"equipo_local_id\": 1,\n    \"equipo_visitante_id\": 2,\n    \"fecha_hora\": \"2026-06-15 19:30:00\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/partidos",
+							"host": ["{{base_url}}"],
+							"path": ["api", "partidos"]
+						},
+						"description": "Agenda un partido. El backend calcula automáticamente el `liga_id` del encuentro basándose en el equipo local. Si los IDs de los equipos coinciden, rechaza la solicitud con Código 422 Unprocessable Entity."
+					}
+				},
+				{
+					"name": "Actualizar Marcador (Reglas Estrictas)",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{ "key": "Accept", "value": "application/json" },
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"formato_marcador\": \"voleibol\",\n    \"resultado_local\": [25, 26, 25],\n    \"resultado_visitante\": [20, 24, 22]\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/partidos/1",
+							"host": ["{{base_url}}"],
+							"path": ["api", "partidos", "1"]
+						},
+						"description": "Inyecta los marcadores estructurados por set. Si se selecciona el formato 'voleibol', el controlador evalúa matemáticamente que los puntajes respeten la diferencia obligatoria de 2 puntos en caso de ventajas. Protegido con transacciones de base de datos."
+					}
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://ligas-deportivas.test",
+			"type": "string"
+		}
+	]
+}

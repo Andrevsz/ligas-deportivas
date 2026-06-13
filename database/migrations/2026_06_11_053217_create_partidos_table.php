@@ -17,8 +17,8 @@ return new class extends Migration
             $table->foreignId('equipo_local_id')->constrained('equipos')->onDelete('cascade');
             $table->foreignId('equipo_visitante_id')->constrained('equipos')->onDelete('cascade');
             $table->dateTime('fecha_hora');
-            $table->integer('resultado_local')->nullable(); 
-            $table->integer('resultado_visitante')->nullable();
+            $table->string('resultado_local')->nullable(); 
+            $table->string('resultado_visitante')->nullable();
             $table->timestamps();
         });
     }

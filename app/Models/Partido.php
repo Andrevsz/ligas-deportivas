@@ -10,12 +10,12 @@ class Partido extends Model
     use HasFactory;
 
     protected $fillable = [
-        'liga_id', 
-        'equipo_local_id', 
-        'equipo_visitante_id', 
-        'fecha_hora', 
-        'resultado_local', 
-        'resultado_visitante'
+        'liga_id', // Agregamos este
+        'equipo_local_id',
+        'equipo_visitante_id',
+        'resultado_local',
+        'resultado_visitante',
+        'fecha_hora' // Corregimos este nombre
     ];
 
     // Un Partido pertenece a una Liga
