@@ -1,95 +1,76 @@
-# Sistema de Gestión de Ligas Deportivas 🏆
+LigasPRO: Plataforma de Gestión Deportiva 🏆
+Plataforma Web Full-Stack desarrollada en Laravel 11, orientada a la administración profesional de torneos. El sistema garantiza la integridad de datos, escalabilidad y una experiencia de usuario moderna mediante el paradigma Glassmorphism.
 
-Plataforma web Full-Stack desarrollada en **Laravel 11** y diseñada con **Tailwind CSS** usando una estética moderna basada en *Glassmorphic Design* (efectos de cristal esmerilado, transparencias y neón). 
+🏗️ Decisión de Arquitectura y Diseño
+UI/UX (Glassmorphism): Se ha priorizado una interfaz intuitiva utilizando Tailwind CSS. El uso de transparencias (backdrop-blur) y bordes de alto contraste permite una lectura clara de los marcadores deportivos, optimizando la visibilidad bajo entornos de alta luminosidad.
 
-El sistema está diseñado bajo una arquitectura relacional sólida que permite a múltiples administradores gestionar sus propios torneos de forma masiva, automatizada e independiente.
+Integridad Transaccional: Cada operación CRUD en el backend está blindada mediante transacciones de base de datos (DB::transaction). Si ocurre un fallo en la red o en el servidor durante la actualización de un marcador, el sistema garantiza un Rollback automático, manteniendo la integridad del torneo.
 
----
+Seguridad (Aislamiento de Datos): Basado en el estándar de seguridad industrial, cada entidad (Liga, Equipo, Jugador) está vinculada al User ID del administrador. Se previene cualquier riesgo de Insecure Direct Object Reference (IDOR) mediante validaciones de acceso en cada controlador.
 
-## 🚀 Características Principales (Evaluación Técnica)
+📊 Modelo de Datos (Relaciones)
+La arquitectura sigue una jerarquía de herencia lógica para evitar redundancia:
 
-* **Aislamiento Total de Datos por Usuario:** El sistema implementa un estricto control de seguridad en el backend mediante el uso de sesiones (`Auth`). Cada administrador (ya sea tu cuenta de usuario registrada o el perfil de *Evaluador Invitado / Demo*) posee un entorno completamente aislado. Un usuario no puede ver, editar ni eliminar las ligas, equipos o partidos creados por otro.
-* **Cálculo de Puntos Dinámico y Eficiente:** Los equipos no almacenan un puntaje estático en la base de datos que requiera actualización manual. Se implementó un *Accessor* avanzado en el modelo (`getPuntosAttribute`). El sistema calcula la tabla de posiciones en tiempo real recorriendo matemáticamente los marcadores de los partidos (3 puntos por victoria, 1 por empate, 0 por derrota).
-* **Flujo UX de Plantillas (Roster):** En lugar de formularios saturados, se diseñó un flujo en dos pasos. Al registrar un equipo, el sistema abre la ficha técnica del club (`equipos.show`) dividida en un panel de control lateral para fichar jugadores uno a uno (`nombre_completo`, `dorsal`, `posición`) y una tabla en tiempo real con la nómina actual.
-* **Estructura Relacional Automatizada:** Cascada de eliminación configurada en la base de datos (`onDelete('cascade')`). Si una liga se elimina, el sistema purga automáticamente todos sus equipos, plantillas de jugadores y calendario de partidos asociados, previniendo registros huérfanos en MySQL.
+Usuarios (1:N) Ligas
 
----
+Ligas (1:N) Equipos
 
-## 📊 Arquitectura de la Base de Datos
+Equipos (1:N) Jugadores
 
-El mapa de relaciones del sistema se organiza de forma jerárquica para asegurar la integridad de los datos:
+Equipos (1:1) Partidos (Local/Visitante)
 
-* **Usuarios ➡️ Ligas:** Relación Uno a Muchos (`HasMany`). Un usuario administra múltiples ligas.
-* **Ligas ➡️ Equipos:** Relación Uno a Muchos (`HasMany`). Una liga agrupa a los clubes inscritos.
-* **Equipos ➡️ Jugadores:** Relación Uno a Muchos (`HasMany`). Un equipo posee una plantilla de deportistas.
-* **Equipos ➡️ Partidos:** Relación de Claves Foráneas Dobles. El modelo de partidos conecta de forma independiente un `equipo_local_id` y un `equipo_visitante_id`.
+Nota: La eliminación en cascada (onDelete('cascade')) está configurada en todas las migraciones para una purga limpia de datos sin registros huérfanos.
 
----
+🛠️ Requisitos del Entorno
+PHP: 8.2 o superior.
 
-## 🛠️ Requisitos del Entorno
+Base de Datos: MySQL 8.0+.
 
-Asegúrate de tener instalado en tu equipo de evaluación:
-* **PHP 8.2** o superior
-* **Composer** (Gestor de dependencias de PHP)
-* **Node.js & NPM** (Para la compilación de estilos)
-* Servidor local con soporte MySQL (Recomendado: **Laragon** o XAMPP)
+Gestores: Composer y Node.js/NPM.
 
----
+Servidor Local: Laragon, XAMPP o Valet.
 
-## 💻 Instrucciones de Instalación y Despliegue
-
-Sigue estos pasos ordenados en la consola para levantar el proyecto en tu entorno local:
-
-1. Clonar el Proyecto
-Descarga el código fuente desde el repositorio oficial:
-```bash
-git clone [https://github.com/TuUsuario/ligas-deportivas.git](https://github.com/TuUsuario/ligas-deportivas.git)
-cd ligas-deportivas
-
-2. Instalar Dependencias del Sistema
-Descarga los paquetes necesarios del núcleo de Laravel y las librerías de estilos:
-
+💻 Guía de Despliegue (Quick Start)
+1. Instalación y Dependencias
 Bash
+git clone <tu-url-de-repositorio>
+cd ligas-deportivas
 composer install
 npm install
-
-3. Configurar el Archivo de Entorno
-Duplica el archivo de ejemplo para crear tu configuración local:
+2. Configuración de Entorno
+Copia la configuración de ejemplo y genera tu llave:
 
 Bash
 cp .env.example .env
-
-Abre el archivo .env recién creado y asegúrate de ajustar el nombre de tu base de datos:
-
-Fragmento de código
-DB_CONNECTION=mysql
-DB_HOST=127.0.0.1
-DB_PORT=3306
-DB_DATABASE=ligas_deportivas
-DB_USERNAME=root
-DB_PASSWORD=
-
-4. Generar la Llave de Seguridad
-Establece la clave de encriptación única de la aplicación:
-
-Bash
 php artisan key:generate
+Edita el archivo .env y define DB_DATABASE, DB_USERNAME y DB_PASSWORD para conectar tu servidor local.
 
-5. Construir el Esquema de Base de Datos
-Crea la base de datos vacía en tu gestor (HeidiSQL, phpMyAdmin, etc.) con el nombre ligas_deportivas y ejecuta las migraciones para inyectar las tablas relacionales y sus llaves foráneas:
+3. Sincronización de Base de Datos
+Ejecuta las migraciones para crear la estructura relacional:
 
 Bash
 php artisan migrate:fresh
-
-6. Ejecutar la Aplicación
-Para ver la plataforma en funcionamiento, abre dos terminales independientes en VS Code:
-
-Terminal 1 (Compilador de Estilos de Tailwind):
+4. Lanzamiento
+Ejecuta ambos comandos en terminales separadas para habilitar el motor de estilos y el servidor web:
 
 Bash
+# Terminal 1: Compilador de Assets
 npm run dev
-Terminal 2 (Servidor Local de PHP):
 
-Bash
+# Terminal 2: Servidor Laravel
 php artisan serve
-Abre tu navegador e ingresa a la dirección local que te entregue la terminal (habitualmente http://127.0.0.1:8000).
+🌐 Documentación de la API
+Para pruebas de integración, se ha incluido el archivo LigasPRO.postman_collection.json en la raíz del proyecto. Este archivo contiene los endpoints configurados para:
+
+Gestión de Ligas y Equipos.
+
+Programación de partidos con validación de equipos.
+
+Actualización de marcadores con lógica condicional (Validación de reglas para Vóleibol vs. Formato Libre).
+
+🛡️ Seguridad y Buenas Prácticas
+Validación de Datos: Todos los formularios pasan por capas de validación del lado del servidor (FormRequest).
+
+Protección CSRF: Todos los formularios utilizan el directivo @csrf de Laravel para prevenir ataques de falsificación de peticiones.
+
+Accesibilidad: Uso de etiquetas aria-label en componentes críticos para garantizar compatibilidad con lectores de pantalla.
